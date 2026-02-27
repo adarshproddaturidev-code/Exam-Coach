@@ -23,6 +23,8 @@ class Student(Base):
     __tablename__ = "students"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(120), nullable=False, default="Student")
+    email = Column(String(120), unique=True, index=True, nullable=False)
+    password_hash = Column(String(200), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     mock_tests = relationship("MockTest", back_populates="student")
@@ -99,7 +101,10 @@ def init_db():
     db = SessionLocal()
     try:
         if not db.query(Student).filter_by(id=1).first():
-            db.add(Student(id=1, name="Demo Student"))
+            from passlib.context import CryptContext
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            hashed_pw = pwd_context.hash("password")
+            db.add(Student(id=1, name="Demo Student", email="demo@example.com", password_hash=hashed_pw))
             db.commit()
     finally:
         db.close()

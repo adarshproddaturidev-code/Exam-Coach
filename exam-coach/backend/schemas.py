@@ -7,6 +7,15 @@ from datetime import datetime
 
 
 # ── Incoming ─────────────────────────────────────────────────────────────────
+class UserRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 class QuestionIn(BaseModel):
     subject: str
     topic: str
@@ -22,6 +31,11 @@ class MockTestIn(BaseModel):
 
 
 # ── Outgoing ──────────────────────────────────────────────────────────────────
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    student_id: int
+
 class TopicScoreOut(BaseModel):
     subject: str
     topic: str

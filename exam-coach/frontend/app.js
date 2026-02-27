@@ -2,7 +2,30 @@
 "use strict";
 
 const API = "http://localhost:8000";
-let studentId = () => parseInt(document.getElementById("student-id-input").value) || 1;
+let studentId = () => {
+  const id = localStorage.getItem("student_id");
+  if (!id) window.location.href = "login.html";
+  return parseInt(id);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sId = localStorage.getItem("student_id");
+  const sName = localStorage.getItem("student_name") || `Student #${sId}`;
+  if (!sId) {
+    window.location.href = "login.html";
+    return;
+  }
+  const nameLabel = document.getElementById("hdr-student-name");
+  if (nameLabel) nameLabel.textContent = sName;
+});
+
+const logoutBtn = document.getElementById("logout-btn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "login.html";
+  });
+}
 
 // Chart instances — kept so we can destroy before re-rendering
 let charts = {};
@@ -25,7 +48,11 @@ function hideLoader() {
 }
 
 async function apiCall(path, method = "GET", body = null) {
-  const opts = { method, headers: { "Content-Type": "application/json" } };
+  const token = localStorage.getItem("access_token");
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const opts = { method, headers };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(`${API}${path}`, opts);
   if (!res.ok) {
@@ -63,9 +90,9 @@ document.getElementById("load-sample-btn").addEventListener("click", async () =>
     const mini = {
       "student_id": 1,
       "questions": [
-        {"subject":"Physics","topic":"Laws of Motion","question_id":"Q1","student_answer":"B","correct_answer":"A","time_taken":95},
-        {"subject":"Chemistry","topic":"Organic Chemistry","question_id":"Q2","student_answer":"C","correct_answer":"C","time_taken":60},
-        {"subject":"Mathematics","topic":"Calculus","question_id":"Q3","student_answer":"A","correct_answer":"D","time_taken":180}
+        { "subject": "Physics", "topic": "Laws of Motion", "question_id": "Q1", "student_answer": "B", "correct_answer": "A", "time_taken": 95 },
+        { "subject": "Chemistry", "topic": "Organic Chemistry", "question_id": "Q2", "student_answer": "C", "correct_answer": "C", "time_taken": 60 },
+        { "subject": "Mathematics", "topic": "Calculus", "question_id": "Q3", "student_answer": "A", "correct_answer": "D", "time_taken": 180 }
       ]
     };
     document.getElementById("json-input").value = JSON.stringify(mini, null, 2);
@@ -114,14 +141,14 @@ document.getElementById("submit-btn").addEventListener("click", async () => {
 function subjectTagClass(subject) {
   const s = (subject || "").toLowerCase();
   if (s.includes("physics")) return "tag-physics";
-  if (s.includes("chem"))    return "tag-chemistry";
-  if (s.includes("math"))    return "tag-mathematics";
+  if (s.includes("chem")) return "tag-chemistry";
+  if (s.includes("math")) return "tag-mathematics";
   return "tag-default";
 }
 
 function weaknessColor(score) {
   if (score >= 0.65) return "#f87171";
-  if (score >= 0.4)  return "#fb923c";
+  if (score >= 0.4) return "#fb923c";
   return "#22d3a6";
 }
 
@@ -135,13 +162,13 @@ function renderTopicCard(t) {
     <div class="topic-title">${t.topic}</div>
     <span class="topic-subject-tag ${subjectTagClass(t.subject)}">${t.subject}</span>
     <div class="score-row">
-      <div class="score-item"><label>Error Rate</label><span style="color:${t.error_rate > 0.5 ? 'var(--red)' : 'var(--green)'}">${(t.error_rate*100).toFixed(0)}%</span></div>
+      <div class="score-item"><label>Error Rate</label><span style="color:${t.error_rate > 0.5 ? 'var(--red)' : 'var(--green)'}">${(t.error_rate * 100).toFixed(0)}%</span></div>
       <div class="score-item"><label>Avg Time</label><span>${t.avg_time.toFixed(1)}s</span></div>
       <div class="score-item"><label>Mistakes</label><span>${t.mistake_freq}</span></div>
     </div>
     <div class="ws-bar-wrap">
       <div class="ws-bar-track">
-        <div class="ws-bar-fill" style="width:${Math.min(t.weakness_score*100, 100).toFixed(1)}%; background:${col};"></div>
+        <div class="ws-bar-fill" style="width:${Math.min(t.weakness_score * 100, 100).toFixed(1)}%; background:${col};"></div>
       </div>
       <div class="ws-label"><span>Weakness Score</span><span style="color:${col};font-weight:700">${t.weakness_score.toFixed(3)}</span></div>
     </div>
@@ -152,8 +179,8 @@ async function loadAnalysis() {
   showLoader("Loading analysis…");
   try {
     const data = await apiCall(`/api/analysis/${studentId()}`);
-    document.getElementById("stat-total").textContent    = data.total_questions;
-    document.getElementById("stat-correct").textContent  = data.total_correct;
+    document.getElementById("stat-total").textContent = data.total_questions;
+    document.getElementById("stat-correct").textContent = data.total_correct;
     document.getElementById("stat-accuracy").textContent = data.accuracy + "%";
     document.getElementById("stat-weak-count").textContent = data.weak_topics.length;
 
@@ -206,7 +233,7 @@ function renderPlan(plan) {
   toggleDay(plan.days[0].day);
 }
 
-window.toggleDay = function(n) {
+window.toggleDay = function (n) {
   const card = document.getElementById(`day-${n}`);
   if (card) card.classList.toggle("open");
 };
@@ -257,19 +284,19 @@ function renderRecs(data) {
       <div class="rec-sections">
         <div class="rec-section">
           <h4>📖 Concept Revision</h4>
-          <ul>${(r.concept_revision||[]).map(x=>`<li>${x}</li>`).join("")}</ul>
+          <ul>${(r.concept_revision || []).map(x => `<li>${x}</li>`).join("")}</ul>
         </div>
         <div class="rec-section">
           <h4>✏️ Practice Exercises</h4>
-          <ul>${(r.practice_exercises||[]).map(x=>`<li>${x}</li>`).join("")}</ul>
+          <ul>${(r.practice_exercises || []).map(x => `<li>${x}</li>`).join("")}</ul>
         </div>
         <div class="rec-section">
           <h4>📄 Mock Tests</h4>
-          <ul>${(r.mock_tests||[]).map(x=>`<li>${x}</li>`).join("")}</ul>
+          <ul>${(r.mock_tests || []).map(x => `<li>${x}</li>`).join("")}</ul>
         </div>
       </div>
       <div class="resources-row">
-        ${(r.resources||[]).map(res=>`
+        ${(r.resources || []).map(res => `
           <a href="${res.url}" target="_blank" rel="noopener" class="resource-chip ${res.type}">
             ${res.type === 'youtube' ? '▶ ' : '🔗 '}${res.title}
           </a>`).join("")}
@@ -334,7 +361,7 @@ async function loadDashboard() {
 
 function renderDashboard(data) {
   const history = data.history || [];
-  const topics  = data.topic_scores || [];
+  const topics = data.topic_scores || [];
 
   // ── Accuracy Over Time ──
   destroyChart("accuracy");
@@ -350,20 +377,23 @@ function renderDashboard(data) {
         tension: 0.4, fill: true, pointBackgroundColor: "#6C63FF", pointRadius: 5,
       }],
     },
-    options: { ...CHART_DEFAULTS, responsive: true, maintainAspectRatio: false,
-      scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, min: 0, max: 100 } } },
+    options: {
+      ...CHART_DEFAULTS, responsive: true, maintainAspectRatio: false,
+      scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, min: 0, max: 100 } }
+    },
   });
 
   // ── Weak vs Strong ──
   destroyChart("topicPie");
   const pieCtx = document.getElementById("topicChart").getContext("2d");
-  const weakCount   = topics.filter(t => t.weakness_score >= 0.4).length;
+  const weakCount = topics.filter(t => t.weakness_score >= 0.4).length;
   const strongCount = topics.length - weakCount;
   charts.topicPie = new Chart(pieCtx, {
     type: "doughnut",
     data: {
       labels: ["Weak Topics", "Strong Topics"],
-      datasets: [{ data: [weakCount, strongCount],
+      datasets: [{
+        data: [weakCount, strongCount],
         backgroundColor: ["rgba(248,113,113,0.8)", "rgba(34,211,166,0.8)"],
         borderColor: "rgba(255,255,255,0.1)", borderWidth: 2,
       }],
@@ -384,13 +414,13 @@ function renderDashboard(data) {
   charts.weakness = new Chart(wkCtx, {
     type: "bar",
     data: {
-      labels: top8.map(t => t.topic.length > 15 ? t.topic.slice(0,14)+"…" : t.topic),
+      labels: top8.map(t => t.topic.length > 15 ? t.topic.slice(0, 14) + "…" : t.topic),
       datasets: [{
         label: "Weakness Score",
         data: top8.map(t => t.weakness_score),
         backgroundColor: top8.map(t => t.weakness_score >= 0.65
           ? "rgba(248,113,113,0.8)" : t.weakness_score >= 0.4
-          ? "rgba(251,146,60,0.8)" : "rgba(34,211,166,0.8)"),
+            ? "rgba(251,146,60,0.8)" : "rgba(34,211,166,0.8)"),
         borderRadius: 6,
       }],
     },
@@ -420,8 +450,3 @@ function renderDashboard(data) {
 
 document.getElementById("refresh-dashboard-btn").addEventListener("click", loadDashboard);
 
-// Sync student ID header label
-document.getElementById("student-id-input").addEventListener("input", () => {
-  document.getElementById("hdr-student-id").textContent =
-    document.getElementById("student-id-input").value || "1";
-});

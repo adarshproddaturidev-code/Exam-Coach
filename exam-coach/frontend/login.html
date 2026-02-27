@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Exam Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card" id="login-card">
+            <div class="auth-header">
+                <span class="brand-icon">🎯</span>
+                <h2>Welcome Back</h2>
+                <p>Log in to your AI Exam Coach</p>
+            </div>
+            <form id="login-form">
+                <div class="form-row">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" class="input-sm" style="width:100%" required />
+                </div>
+                <div class="form-row">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="input-sm" style="width:100%" required />
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top: 1rem;">Log In</button>
+            </form>
+            <div class="auth-switch">
+                Don't have an account? <a href="#" id="show-register">Sign up</a>
+            </div>
+        </div>
+
+        <div class="auth-card hidden" id="register-card">
+            <div class="auth-header">
+                <span class="brand-icon">✨</span>
+                <h2>Create Account</h2>
+                <p>Start your personalized journey</p>
+            </div>
+            <form id="register-form">
+                <div class="form-row">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-name" class="input-sm" style="width:100%" required />
+                </div>
+                <div class="form-row">
+                    <label>Email Address</label>
+                    <input type="email" id="reg-email" class="input-sm" style="width:100%" required />
+                </div>
+                <div class="form-row">
+                    <label>Password</label>
+                    <input type="password" id="reg-password" class="input-sm" style="width:100%" required />
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top: 1rem;">Create Account</button>
+            </form>
+            <div class="auth-switch">
+                Already have an account? <a href="#" id="show-login">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="alert"></div>
+
+    <!-- Loader overlay -->
+    <div id="loader" class="loader-overlay hidden">
+        <div class="loader-spinner"></div>
+        <p id="loader-msg">Authenticating…</p>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>

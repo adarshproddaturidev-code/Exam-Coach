@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Exam Coach — AI Personalized Study Planner</title>
-  <meta name="description" content="AI-powered entrance exam coach: analyze mock tests, identify weak topics, and get a personalized 7-day study plan." />
+  <meta name="description"
+    content="AI-powered entrance exam coach: analyze mock tests, identify weak topics, and get a personalized 7-day study plan." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
   <!-- ── Header ───────────────────────────────────────────────────────────── -->
   <header class="site-header">
@@ -23,18 +27,20 @@
       </div>
       <div class="header-meta">
         <span class="badge badge-ai">🧠 AI Active</span>
-        <span class="student-label">Student ID: <strong id="hdr-student-id">1</strong></span>
+        <span class="student-label" id="hdr-student-name">Loading...</span>
+        <button id="logout-btn" class="btn btn-secondary"
+          style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 999px; margin-left: 0.5rem;">Logout</button>
       </div>
     </div>
   </header>
 
   <!-- ── Navigation ────────────────────────────────────────────────────────── -->
   <nav class="tab-nav" role="tablist">
-    <button class="tab-btn active" data-tab="submit"       role="tab" id="tab-submit">📋 Submit Test</button>
-    <button class="tab-btn"        data-tab="analysis"     role="tab" id="tab-analysis">📊 Weak Topics</button>
-    <button class="tab-btn"        data-tab="studyplan"    role="tab" id="tab-studyplan">📅 Study Plan</button>
-    <button class="tab-btn"        data-tab="recs"         role="tab" id="tab-recs">📚 Resources</button>
-    <button class="tab-btn"        data-tab="dashboard"    role="tab" id="tab-dashboard">📈 Dashboard</button>
+    <button class="tab-btn active" data-tab="submit" role="tab" id="tab-submit">📋 Submit Test</button>
+    <button class="tab-btn" data-tab="analysis" role="tab" id="tab-analysis">📊 Weak Topics</button>
+    <button class="tab-btn" data-tab="studyplan" role="tab" id="tab-studyplan">📅 Study Plan</button>
+    <button class="tab-btn" data-tab="recs" role="tab" id="tab-recs">📚 Resources</button>
+    <button class="tab-btn" data-tab="dashboard" role="tab" id="tab-dashboard">📈 Dashboard</button>
   </nav>
 
   <!-- ── Main ─────────────────────────────────────────────────────────────── -->
@@ -51,10 +57,7 @@
       </div>
 
       <div class="card form-card">
-        <div class="form-row">
-          <label for="student-id-input">Student ID</label>
-          <input type="number" id="student-id-input" value="1" min="1" class="input-sm" />
-        </div>
+
 
         <div class="form-row">
           <label for="json-input">Mock Test JSON</label>
@@ -63,7 +66,7 @@
 
         <div class="btn-group">
           <button class="btn btn-secondary" id="load-sample-btn">📥 Load Sample Data</button>
-          <button class="btn btn-primary"   id="submit-btn">🚀 Submit &amp; Analyse</button>
+          <button class="btn btn-primary" id="submit-btn">🚀 Submit &amp; Analyse</button>
         </div>
       </div>
 
@@ -131,7 +134,7 @@
       </div>
 
       <div class="btn-group" style="margin-bottom:1.5rem">
-        <button class="btn btn-primary"   id="gen-plan-btn">✨ Generate New Plan</button>
+        <button class="btn btn-primary" id="gen-plan-btn">✨ Generate New Plan</button>
         <button class="btn btn-secondary" id="load-plan-btn">📂 Load Latest Plan</button>
       </div>
 
@@ -148,7 +151,7 @@
       </div>
 
       <div class="btn-group" style="margin-bottom:1.5rem">
-        <button class="btn btn-primary"   id="gen-recs-btn">✨ Generate Recommendations</button>
+        <button class="btn btn-primary" id="gen-recs-btn">✨ Generate Recommendations</button>
         <button class="btn btn-secondary" id="load-recs-btn">📂 Load Latest</button>
       </div>
 
@@ -198,4 +201,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>

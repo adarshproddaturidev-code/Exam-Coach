@@ -1,9 +1,12 @@
 fastapi==0.103.2
 uvicorn==0.23.2
-sqlalchemy==2.0.21
+sqlalchemy>=2.0.36
 pydantic==2.11.1
 openai==1.68.2
 python-dotenv==1.0.0
 aiofiles==23.1.0
 anyio==3.7.1
 starlette==0.27.0
+passlib==1.7.4
+bcrypt==4.1.2
+python-jose[cryptography]==3.3.0
