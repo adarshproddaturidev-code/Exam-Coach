@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Coach — AI Personalized Study Planner</title>
+  <meta name="description" content="AI-powered entrance exam coach: analyze mock tests, identify weak topics, and get a personalized 7-day study plan." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- ── Header ───────────────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">🎯</span>
+        <div>
+          <h1 class="brand-title">Exam Coach</h1>
+          <p class="brand-sub">AI-Powered Entrance Exam Preparation</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="badge badge-ai">🧠 AI Active</span>
+        <span class="student-label">Student ID: <strong id="hdr-student-id">1</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Navigation ────────────────────────────────────────────────────────── -->
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" data-tab="submit"       role="tab" id="tab-submit">📋 Submit Test</button>
+    <button class="tab-btn"        data-tab="analysis"     role="tab" id="tab-analysis">📊 Weak Topics</button>
+    <button class="tab-btn"        data-tab="studyplan"    role="tab" id="tab-studyplan">📅 Study Plan</button>
+    <button class="tab-btn"        data-tab="recs"         role="tab" id="tab-recs">📚 Resources</button>
+    <button class="tab-btn"        data-tab="dashboard"    role="tab" id="tab-dashboard">📈 Dashboard</button>
+  </nav>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden" role="alert"></div>
+
+    <!-- ── Tab 1: Submit Test ──────────────────────────────────────────────── -->
+    <section class="tab-panel active" id="panel-submit">
+      <div class="panel-header">
+        <h2>📋 Submit Mock Test</h2>
+        <p>Paste your mock test JSON or load the sample to get started.</p>
+      </div>
+
+      <div class="card form-card">
+        <div class="form-row">
+          <label for="student-id-input">Student ID</label>
+          <input type="number" id="student-id-input" value="1" min="1" class="input-sm" />
+        </div>
+
+        <div class="form-row">
+          <label for="json-input">Mock Test JSON</label>
+          <textarea id="json-input" rows="18" placeholder='Paste JSON here or click "Load Sample" below…'></textarea>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="load-sample-btn">📥 Load Sample Data</button>
+          <button class="btn btn-primary"   id="submit-btn">🚀 Submit &amp; Analyse</button>
+        </div>
+      </div>
+
+      <div id="submit-result" class="result-box hidden"></div>
+
+      <!-- JSON Format Helper -->
+      <div class="card info-card">
+        <h3>📌 Expected JSON Format</h3>
+        <pre class="code-block">{
+  "student_id": 1,
+  "questions": [
+    {
+      "subject": "Physics",
+      "topic": "Laws of Motion",
+      "question_id": "Q001",
+      "student_answer": "B",
+      "correct_answer": "A",
+      "time_taken": 95
+    }, ...
+  ]
+}</pre>
+      </div>
+    </section>
+
+    <!-- ── Tab 2: Weak Topic Analysis ─────────────────────────────────────── -->
+    <section class="tab-panel" id="panel-analysis">
+      <div class="panel-header">
+        <h2>📊 Weak Topic Analysis</h2>
+        <p>Topics ranked by AI-computed Weakness Score.</p>
+      </div>
+
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <span class="stat-val" id="stat-total">—</span>
+          <span class="stat-label">Total Questions</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val" id="stat-correct">—</span>
+          <span class="stat-label">Correct</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val" id="stat-accuracy">—</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val" id="stat-weak-count">—</span>
+          <span class="stat-label">Weak Topics</span>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-bottom:1.5rem">
+        <button class="btn btn-primary" id="refresh-analysis-btn">🔄 Load/Refresh Analysis</button>
+      </div>
+
+      <div class="topics-grid" id="topics-grid">
+        <div class="placeholder-msg">Submit a mock test first, then click "Load/Refresh Analysis".</div>
+      </div>
+    </section>
+
+    <!-- ── Tab 3: 7-Day Study Plan ─────────────────────────────────────────── -->
+    <section class="tab-panel" id="panel-studyplan">
+      <div class="panel-header">
+        <h2>📅 7-Day Personalised Study Plan</h2>
+        <p>AI-generated revision schedule based on your weak topics.</p>
+      </div>
+
+      <div class="btn-group" style="margin-bottom:1.5rem">
+        <button class="btn btn-primary"   id="gen-plan-btn">✨ Generate New Plan</button>
+        <button class="btn btn-secondary" id="load-plan-btn">📂 Load Latest Plan</button>
+      </div>
+
+      <div id="plan-container" class="plan-container">
+        <div class="placeholder-msg">Click "Generate New Plan" to create your personalised schedule.</div>
+      </div>
+    </section>
+
+    <!-- ── Tab 4: Recommendations ─────────────────────────────────────────── -->
+    <section class="tab-panel" id="panel-recs">
+      <div class="panel-header">
+        <h2>📚 Study Material Recommendations</h2>
+        <p>Curated resources for your weak topics.</p>
+      </div>
+
+      <div class="btn-group" style="margin-bottom:1.5rem">
+        <button class="btn btn-primary"   id="gen-recs-btn">✨ Generate Recommendations</button>
+        <button class="btn btn-secondary" id="load-recs-btn">📂 Load Latest</button>
+      </div>
+
+      <div id="recs-container" class="recs-container">
+        <div class="placeholder-msg">Click "Generate Recommendations" to get tailored study resources.</div>
+      </div>
+    </section>
+
+    <!-- ── Tab 5: Dashboard ───────────────────────────────────────────────── -->
+    <section class="tab-panel" id="panel-dashboard">
+      <div class="panel-header">
+        <h2>📈 Progress Dashboard</h2>
+        <p>Track your improvement across tests.</p>
+      </div>
+
+      <div class="btn-group" style="margin-bottom:1.5rem">
+        <button class="btn btn-primary" id="refresh-dashboard-btn">🔄 Refresh Dashboard</button>
+      </div>
+
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <h3>Accuracy Over Time</h3>
+          <div class="chart-wrap"><canvas id="accuracyChart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <h3>Weak vs Strong Topics</h3>
+          <div class="chart-wrap"><canvas id="topicChart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <h3>Weakness Score by Topic</h3>
+          <div class="chart-wrap"><canvas id="weaknessChart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <h3>Avg Time per Test (sec)</h3>
+          <div class="chart-wrap"><canvas id="timeChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Loader overlay -->
+  <div id="loader" class="loader-overlay hidden">
+    <div class="loader-spinner"></div>
+    <p id="loader-msg">Analysing…</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
